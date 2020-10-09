@@ -225,9 +225,8 @@ def plotErrors(channel_names_list, zd_list, ax=None, qs=[.01,.5,.99], suffix='_p
 
 if __name__ == "__main__":
     ## plot trace example without zd ###########################################
-    # plotTrace(['L', 'K_ir', 'K_m35', 'h_u'], False)
+    plotTrace(['L', 'K_ir', 'K_m35', 'h_u'], False)
     ############################################################################
-
 
     ## plot trace example with zd ##############################################
     # plotTrace(['L', 'K_ir', 'K_m35'], True)
@@ -266,3 +265,5 @@ if __name__ == "__main__":
     #           ]
     # plotErrors(channel_names_list, zd_list)
     ############################################################################
+
+
