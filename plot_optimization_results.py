@@ -224,42 +224,45 @@ def plotErrors(channel_names_list, zd_list, ax=None, qs=[.01,.5,.99], suffix='_p
 
 
 if __name__ == "__main__":
-    # plot trace example without zd
+    ## plot trace example without zd ###########################################
     # plotTrace(['L', 'K_ir', 'K_m35', 'h_u'], False)
-    # plot trace example with zd
+    ############################################################################
+
+
+    ## plot trace example with zd ##############################################
     # plotTrace(['L', 'K_ir', 'K_m35'], True)
+    ############################################################################
 
-    # plot errors of each configuration
-    channel_names_list = [ ['L_c'],
-                           ['L_c'],
-                           ['L'],
-                           ['L'],
-                           ['L', 'K_ir'],
-                           ['L', 'K_ir'],
-                           ['L', 'K_m35'],
-                           ['L', 'K_m35'],
-                           ['L', 'K_ir', 'K_m35'],
-                           ['L', 'K_ir', 'K_m35'],
-                           ['L', 'h_u'],
-                           ['L', 'K_ir', 'h_u'],
-                           ['L', 'K_m35', 'h_u'],
-                           ['L', 'K_ir', 'K_m35', 'h_u'],
-                         ]
-    zd_list = [True,
-               False,
-               True,
-               False,
-               True,
-               False,
-               True,
-               False,
-               True,
-               False,
-               False,
-               False,
-               False,
-               False
-              ]
-    plotErrors(channel_names_list, zd_list)
-
-
+    ## plot errors of each configuration #######################################
+    # channel_names_list = [ ['L_c'],
+    #                        ['L_c'],
+    #                        ['L'],
+    #                        ['L'],
+    #                        ['L', 'K_ir'],
+    #                        ['L', 'K_ir'],
+    #                        ['L', 'K_m35'],
+    #                        ['L', 'K_m35'],
+    #                        ['L', 'K_ir', 'K_m35'],
+    #                        ['L', 'K_ir', 'K_m35'],
+    #                        ['L', 'h_u'],
+    #                        ['L', 'K_ir', 'h_u'],
+    #                        ['L', 'K_m35', 'h_u'],
+    #                        ['L', 'K_ir', 'K_m35', 'h_u'],
+    #                      ]
+    # zd_list = [True,
+    #            False,
+    #            True,
+    #            False,
+    #            True,
+    #            False,
+    #            True,
+    #            False,
+    #            True,
+    #            False,
+    #            False,
+    #            False,
+    #            False,
+    #            False
+    #           ]
+    # plotErrors(channel_names_list, zd_list)
+    ############################################################################

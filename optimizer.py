@@ -7,6 +7,8 @@ from bluepyopt.evaluators import Evaluator
 
 from neat import NeuronSimTree
 
+import pickle
+
 from channels import channelcollection
 import utils, data
 
@@ -313,6 +315,16 @@ class AttenuationEvaluator(ModelEvaluator):
 ################################################################################
 
 
+def optimize(evaluator):
+    global MAX_ITER, N_OFFSPRING
+
+    optimisation = IBEADEAPOptimisation(evaluator=evaluator,
+                                        offspring_size=N_OFFSPRING, map_function=map)
+    final_pop, hall_of_fame, logs, hist = optimisation.run(max_ngen=MAX_ITER)
+
+    return final_pop, hall_of_fame, logs, hist
+
+
 def optimizeModel(channel_names=None, zd=False, suffix=''):
     """
     Optimizes the morphology equipped with channels in `channel_names` to
@@ -329,7 +341,7 @@ def optimizeModel(channel_names=None, zd=False, suffix=''):
 
     if channel_names is None:
         channel_names = ['L', 'K_ir', 'K_m35', 'h_u']
-    utils.getFileName(channel_names, zd, suffix=suffix)
+    file_name = utils.getFileName(channel_names, zd, suffix=suffix)
 
     full_tree, red_tree, full_locs, red_locs = data.reduceMorphology()
     sim_tree = red_tree.__copy__(new_tree=NeuronSimTree())
@@ -348,4 +360,4 @@ def optimizeModel(channel_names=None, zd=False, suffix=''):
 
 
 if __name__ == "__main__":
-    optimizeModel()
+    optimizeModel(channel_names=['L'], zd=False, suffix='_test')
