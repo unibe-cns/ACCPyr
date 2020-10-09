@@ -8,7 +8,7 @@ Running the code
 ----------------
 
 To run, make sure all requirements are installed on your machine. Notably, this
-code uses [BluePyOpt](https://bluepyopt.readthedocs.io/en/latest/) [VanGeit2020]_
+code uses [BluePyOpt](https://bluepyopt.readthedocs.io/en/latest/) [VanGeit2016]_
 and [NEAT](https://neatdend.readthedocs.io/en/latest/) [Wybo2020]_.
 
 Clone this repository and compile the ion channels by running from its source directory:
