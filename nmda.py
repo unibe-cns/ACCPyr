@@ -1,6 +1,7 @@
 import numpy as np
-
 from neuron import h
+
+import neat
 from neat import NeuronSimTree, MorphLoc
 
 import copy

@@ -23,7 +23,7 @@ N_OFFSPRING = 2
 
 ## model evaluator for optimization ############################################
 class ModelEvaluator(Evaluator):
-    def __init__(self, sim_tree, data,
+    def __init__(self, sim_tree, v_dat,
                        loc_soma, loc_dend,
                        channel_names=['L'],
                        mode='fit'):
@@ -47,16 +47,16 @@ class ModelEvaluator(Evaluator):
                       'h_u': 60.*1e2, 'h_HAY': 60.*1e2,
                       'Na_p': 100.*1e2, 'NaP': 100.*1e2}
         # define fit parameters
-        self._defineFitObjects(data)
+        self._defineFitObjects(v_dat)
 
         # don't check bounds
         if mode == 'evaluate':
             for p in self.params:
                 p.bounds = None
 
-    def _defineFitObjects(self, data):
+    def _defineFitObjects(self, v_dat):
         # fitness evaluator
-        features = [utils.VeqFeature(data), utils.VStepFeature(data),  utils.TraceFeature(data)]
+        features = [utils.VeqFeature(v_dat), utils.VStepFeature(v_dat),  utils.TraceFeature(v_dat)]
         self.objectives = [SingletonObjective('V_eq', features[0]),
                            SingletonObjective('V_step', features[1]),
                            SingletonObjective('V_trace', features[2])]
@@ -265,12 +265,12 @@ class AttenuationEvaluator(ModelEvaluator):
 
     def _defineFitObjects(self, f_d2s, f_s2d):
         # reference attenuation
-        data = data.DataContainer(with_zd=True)
-        att_f = utils.AttFeature(data)
+        v_dat = data.DataContainer(with_zd=True)
+        att_f = utils.AttFeature(v_dat)
         att_ref_d2s = att_f.att_d2s * f_d2s
         att_ref_s2d = att_f.att_s2d * f_d2s
         # fitness evaluator
-        features = [utils.AttFeature_(att_ref_d2s, att_ref_s2d, data)]
+        features = [utils.AttFeature_(att_ref_d2s, att_ref_s2d, v_dat)]
         self.objectives = [SingletonObjective('Att', features[0])]
         # parameters
         self.params = [

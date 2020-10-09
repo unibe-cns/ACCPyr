@@ -1,5 +1,8 @@
 import numpy as np
 
+import sys
+sys.setrecursionlimit(10000)
+
 from neat import MorphTree
 
 

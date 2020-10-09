@@ -1,8 +1,8 @@
 import numpy as np
 
-
 from bluepyopt.ephys.efeatures import EFeature
 
+import data
 
 
 ################################################################################
@@ -10,7 +10,7 @@ def getFileName(channel_names, zd, suffix=''):
     """
     Auxililiary function to construct file name of optimization results
     """
-    file_name = paths.data_path + 'hof_' + '_'.join(channel_names)
+    file_name = 'params/hof_' + '_'.join(channel_names)
     if zd: file_name += '_with_zd'
     file_name += suffix + '.p'
     return file_name
@@ -65,10 +65,8 @@ class VeqFeature(EFeature):
         self.extractVeq(self.data.v_s, self.data.v_d, store=True)
 
     def extractVeq(self, v_s, v_d, store=False):
-        global T0, T1, T2, T3
-
-        t0s = np.array([T0, T1, T2, T3]) - T0
-        t1s = np.array([T0, T1, T2, T3]) - 5.
+        t0s = np.array([data.T0, data.T1, data.T2, data.T3]) - data.T0
+        t1s = np.array([data.T0, data.T1, data.T2, data.T3]) - 5.
         i0s = (t0s / self.data.dt).astype(int)
         i1s = (t1s / self.data.dt).astype(int)
 
@@ -90,10 +88,8 @@ class VStepFeature(EFeature):
         self.extractVStep(self.data.v_s, self.data.v_d, store=True)
 
     def extractVStep(self, v_s, v_d, store=False):
-        global T0, T1, T2, T3
-
-        t0s = np.array([T0, T1, T2, T3]) + 500.
-        t1s = np.array([T0, T1, T2, T3]) + 595.
+        t0s = np.array([data.T0, data.T1, data.T2, data.T3]) + 500.
+        t1s = np.array([data.T0, data.T1, data.T2, data.T3]) + 595.
         i0s = (t0s / self.data.dt).astype(int)
         i1s = (t1s / self.data.dt).astype(int)
 
@@ -118,10 +114,8 @@ class V01StepFeature(EFeature):
         self.extractV01Step(self.data.v_s, self.data.v_d, store=True)
 
     def extractV01Step(self, v_s, v_d, store=False):
-        global T0, T1
-
-        t0s = np.array([T0, T1]) + 500.
-        t1s = np.array([T0, T1]) + 595.
+        t0s = np.array([data.T0, data.T1]) + 500.
+        t1s = np.array([data.T0, data.T1]) + 595.
         i0s = (t0s / self.data.dt).astype(int)
         i1s = (t1s / self.data.dt).astype(int)
 
@@ -147,10 +141,8 @@ class V23StepFeature(EFeature):
         self.extractV23Step(self.data.v_s, self.data.v_d, store=True)
 
     def extractV23Step(self, v_s, v_d, store=False):
-        global T2, T3
-
-        t0s = np.array([T2, T3]) + 500.
-        t1s = np.array([T2, T3]) + 595.
+        t0s = np.array([data.T2, data.T3]) + 500.
+        t1s = np.array([data.T2, data.T3]) + 595.
         i0s = (t0s / self.data.dt).astype(int)
         i1s = (t1s / self.data.dt).astype(int)
 
@@ -185,10 +177,8 @@ class DecayFeature(EFeature):
         self.extractVDecay(self.data.v_s, self.data.v_d, store=True)
 
     def extractVDecay(self, v_s, v_d, store=False):
-        global T0, T1, T2, T3
-
-        t0s = np.array([T0, T1, T2, T3]) + DUR + self.t_margin
-        t1s = np.array([T0, T1, T2, T3]) + DUR + 270.
+        t0s = np.array([data.T0, data.T1, data.T2, data.T3]) + data.DUR + self.t_margin
+        t1s = np.array([data.T0, data.T1, data.T2, data.T3]) + data.DUR + 270.
         i0s = (t0s / self.data.dt).astype(int)
         i1s = (t1s / self.data.dt).astype(int)
 

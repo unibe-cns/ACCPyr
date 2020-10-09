@@ -1,14 +1,15 @@
 import numpy as np
 
+import neat
 from neat import NeuronSimTree, GreensTree
+
+import pickle
 
 import utils, data, optimizer, nmda
 from matplotlibsettings import *
 
 
 # parameters g_h distribution
-# PVALS_1 = [1000., 1000., 5000., 10000., -40., 0.]
-# PVALS_2 = [   0.,    0., 5000., 10000., -40., 0.]
 PVALS_1 = [1000., 1000., 6000., 6000., -40., 0.]
 PVALS_2 = [   0.,    0., 6000., 6000., -40., 0.]
 
@@ -33,7 +34,7 @@ class HCurrentAnalyzer():
         # measured data
         self.v_dat = data.DataContainer(with_zd=True)
         # get file name
-        file_name = utils.getFileName(channel_names, True)
+        file_name = utils.getFileName(channel_names, True, suffix='_predef')
 
         print(file_name)
         # load hall of fame
@@ -126,7 +127,7 @@ class HCurrentAnalyzer():
         res_2  = self.att_evaluator_2.runSim()
 
         # compute attenuation with zd
-        att_feature = data.ATTFeature(self.v_dat)
+        att_feature = utils.AttFeature(self.v_dat)
         att_d2s_zd, att_s2d_zd = att_feature.calcAttenuation(res_zd['v_m'][0][:-1], res_zd['v_m'][1][:-1])
 
         # compute attenuation for two hcn channels densities
@@ -240,10 +241,10 @@ class HCurrentAnalyzer():
         _, resc_nmda_wh_2, resc_sim_wh_2 = nmda_tree_wh_2.findNMDAThreshold(AP_LOCS[0], n_syns, f_wh_2*G_MAX_AMPA, f_wh_2*G_MAX_NMDA)
 
         # save nmda activation curves
-        with open(paths.tool_path + 'hcn_att_nmda_act.p', 'wb') as f:
-            dill.dump(res_nmda_zd, f)
-            dill.dump(res_nmda_wh_1, f)
-            dill.dump(res_nmda_wh_2, f)
+        with open('params/hcn_att_nmda_act.p', 'wb') as f:
+            pickle.dump(res_nmda_zd, f)
+            pickle.dump(res_nmda_wh_1, f)
+            pickle.dump(res_nmda_wh_2, f)
 
         if axes is None:
             pl.figure('morph')
@@ -600,9 +601,9 @@ class HCurrentAnalyzer():
         sim_tree_wh_1 = self.att_evaluator_1.getTreeWithParams()
         sim_tree_wh_2 = self.att_evaluator_2.getTreeWithParams()
 
-        nmda_tree_zd   = sim_tree_zd.__copy__(new_tree=NMDASimTree())
-        nmda_tree_wh_1 = sim_tree_wh_1.__copy__(new_tree=NMDASimTree())
-        nmda_tree_wh_2 = sim_tree_wh_2.__copy__(new_tree=NMDASimTree())
+        nmda_tree_zd   = sim_tree_zd.__copy__(new_tree=nmda.NMDASimTree())
+        nmda_tree_wh_1 = sim_tree_wh_1.__copy__(new_tree=nmda.NMDASimTree())
+        nmda_tree_wh_2 = sim_tree_wh_2.__copy__(new_tree=nmda.NMDASimTree())
 
         nmda_tree_zd.setCompTree()
         nmda_tree_wh_1.setCompTree()
@@ -631,13 +632,13 @@ class HCurrentAnalyzer():
         # _, resc_nmda_wh_2, resc_sim_wh_2 = nmda_tree_wh_2.findNMDAThreshold(AP_LOCS[0], n_syns, G_MAX_AMPA, G_MAX_NMDA, loc_=AP_LOCS[1], n_syn_=2*ns_)
 
         # load nmda activation curves
-        with open(paths.tool_path + 'hcn_att_nmda_act.p', 'rb') as f:
-            n_syns_ = np.arange(1,25)
+        with open('params/hcn_att_nmda_act.p', 'rb') as f:
+            # n_syns_ = np.arange(1,25)
             # n_syns_ = np.array([5, 10, 20])
-            # n_syns_ = n_syns
-            res1_nmda_zd = dill.load(f)
-            resc1_nmda_wh_1 = dill.load(f)
-            resc1_nmda_wh_2 = dill.load(f)
+            n_syns_ = n_syns
+            res1_nmda_zd = pickle.load(f)
+            resc1_nmda_wh_1 = pickle.load(f)
+            resc1_nmda_wh_2 = pickle.load(f)
 
         if axes is None:
             pl.figure('morph')
@@ -761,13 +762,13 @@ class HCurrentAnalyzer():
 if __name__ == "__main__":
     hca = HCurrentAnalyzer()
 
-    # hca.plotAttenuation()
+    hca.plotAttenuation()
 
-    # hca.plotLocalNMDA(n_syns=np.array([5, 10, 18]))
+    # hca.plotLocalNMDA(n_syns=np.array([1, 5, 10, 18]))
     # hca.plotLocalNMDA(n_syns=np.arange(1,25))
 
-    # hca.plotNMDAInteraction(n_syns=np.array([1,10,18]))
-    hca.plotNMDAInteraction(n_syns=np.arange(1,25))
+    # hca.plotNMDAInteraction(n_syns=np.array([1, 5,10,18]))
+    # hca.plotNMDAInteraction(n_syns=np.arange(1,25))
 
 
 
