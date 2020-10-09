@@ -2,11 +2,23 @@ import numpy as np
 
 from neat import NeuronSimTree
 
+import pickle
+
 import data, utils, optimizer
 from matplotlibsettings import *
 
 
-def plotTrace(channel_names, zd, axes=None, plot_xlabel=True, plot_ylabel=True, plot_legend=True, units='uS/cm2'):
+PSTRINGS = {'L': '$L$', 'L_c': '$L_x$',
+            'K_m': '$K_m$', 'K_m35': '$K_m$', 'K_ir': '$K_{ir}$',
+            'h_HAY': '$h$', 'h_u': '$h$',
+            'Na_p': '$Na_p$', 'NaP': '$NaP$'}
+PCOLORS = {'L': colours[0], 'L_c': colours[0],
+           'K_m35': colours[1], 'K_ir': colours[2], 'K_m': colours[5],
+           'h_u': colours[3], 'h_HAY': colours[4],
+           'Na_p': colours[5], 'NaP': colours[6]}
+
+
+def plotTrace(channel_names, zd, axes=None, plot_xlabel=True, plot_ylabel=True, plot_legend=True, units='uS/cm2', suffix='_predef'):
     ts = np.array([data.T0, data.T1, data.T2, data.T3]) - 100.
     pcolor = 'Orange' if zd else 'Blue'
     if units == 'uS/cm2' :
@@ -23,7 +35,7 @@ def plotTrace(channel_names, zd, axes=None, plot_xlabel=True, plot_ylabel=True, 
     # measured data
     v_dat = data.DataContainer(with_zd=zd)
     # get file name
-    file_name = utils.getFileName(channel_names, zd)
+    file_name = utils.getFileName(channel_names, zd, suffix=suffix)
     # model
     model_evaluator = optimizer.ModelEvaluator(sim_tree, v_dat,
                                                 red_locs[0], red_locs[1],
@@ -44,9 +56,9 @@ def plotTrace(channel_names, zd, axes=None, plot_xlabel=True, plot_ylabel=True, 
     else:
         pshow = False
 
-    i0s = [int(tt / DT) for tt in ts]
-    i1s = [int((tt+1000.-DT)/DT) for tt in ts]
-    t_plot = np.arange(0., 1000.-3*DT/2., DT)
+    i0s = [int(tt / data.DT) for tt in ts]
+    i1s = [int((tt+1000.-data.DT)/data.DT) for tt in ts]
+    t_plot = np.arange(0., 1000.-3*data.DT/2., data.DT)
 
     pchanstr = r'' + ', '.join([PSTRINGS[c_name] for c_name in channel_names])
     ax = axes[0]
@@ -105,10 +117,10 @@ def plotTrace(channel_names, zd, axes=None, plot_xlabel=True, plot_ylabel=True, 
         model_evaluator.setParameterValues(pvals)
         ps = model_evaluator.getParameterValuesAsDict()
         print(model_evaluator.toStrParameterValues())
-        d2s = np.linspace(0., 400., 1e3)
+        d2s = np.linspace(0., 400., int(1e3))
         for ii, c_name in enumerate(model_evaluator.channel_names):
-            func = expDistr(ps['d_'+c_name], ps['g0_'+c_name],
-                            g_max=model_evaluator.g_max[c_name])
+            func = utils.expDistr(ps['d_'+c_name], ps['g0_'+c_name],
+                                  g_max=model_evaluator.g_max[c_name])
             if jj == 0:
                 ax.plot(d2s, func(d2s)*unit_conv, c=PCOLORS[c_name], lw=lwidth, label=PSTRINGS[c_name])
             else:
@@ -144,7 +156,7 @@ def calcError(model_evaluator, hall_of_fame, v_dat):
     return v_errs
 
 
-def plotErrors(channel_names_list, zd_list, ax=None, qs=[.01,.5,.99]):
+def plotErrors(channel_names_list, zd_list, ax=None, qs=[.01,.5,.99], suffix='_predef'):
     global PSTRINGS
 
     full_tree, red_tree, full_locs, red_locs = data.reduceMorphology()
@@ -155,16 +167,16 @@ def plotErrors(channel_names_list, zd_list, ax=None, qs=[.01,.5,.99]):
     for channel_names, zd in zip(channel_names_list, zd_list):
 
         # load hall of fame
-        file_name = utils.getFileName(channel_names, zd)
+        file_name = utils.getFileName(channel_names, zd, suffix=suffix)
         file = open(file_name, 'rb')
-        hall_of_fame = dill.load(file)
+        hall_of_fame = pickle.load(file)
         file.close()
 
         # measured data
         v_dat = data.DataContainer(with_zd=zd)
 
         # model
-        model_evaluator = optimizerModelEvaluator(sim_tree, v_dat,
+        model_evaluator = optimizer.ModelEvaluator(sim_tree, v_dat,
                                                     red_locs[0], red_locs[1],
                                                     channel_names=channel_names)
 
@@ -209,3 +221,45 @@ def plotErrors(channel_names_list, zd_list, ax=None, qs=[.01,.5,.99]):
 
     if pshow:
         pl.show()
+
+
+if __name__ == "__main__":
+    # plot trace example without zd
+    # plotTrace(['L', 'K_ir', 'K_m35', 'h_u'], False)
+    # plot trace example with zd
+    # plotTrace(['L', 'K_ir', 'K_m35'], True)
+
+    # plot errors of each configuration
+    channel_names_list = [ ['L_c'],
+                           ['L_c'],
+                           ['L'],
+                           ['L'],
+                           ['L', 'K_ir'],
+                           ['L', 'K_ir'],
+                           ['L', 'K_m35'],
+                           ['L', 'K_m35'],
+                           ['L', 'K_ir', 'K_m35'],
+                           ['L', 'K_ir', 'K_m35'],
+                           ['L', 'h_u'],
+                           ['L', 'K_ir', 'h_u'],
+                           ['L', 'K_m35', 'h_u'],
+                           ['L', 'K_ir', 'K_m35', 'h_u'],
+                         ]
+    zd_list = [True,
+               False,
+               True,
+               False,
+               True,
+               False,
+               True,
+               False,
+               True,
+               False,
+               False,
+               False,
+               False,
+               False
+              ]
+    plotErrors(channel_names_list, zd_list)
+
+
